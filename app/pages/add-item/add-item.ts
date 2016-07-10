@@ -14,8 +14,7 @@ import { ViewController, NavController } from 'ionic-angular';
 
 export class AddItemPage {
 
-  private title = "";
-  private description = "";
+  private name = "";
 
   constructor(private nav: NavController, private view: ViewController) {
 
@@ -23,8 +22,7 @@ export class AddItemPage {
 
   saveItem(){
     let newItem = {
-      title: this.title,
-      description: this.description
+      name: this.name
     };
 
     this.view.dismiss(newItem);

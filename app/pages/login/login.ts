@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ViewController, NavController } from 'ionic-angular';
-
+import {HubLogin} from '../../providers/hub-login/hub-login';
 /*
   Generated class for the LoginPage page.
 
@@ -9,23 +9,34 @@ import { ViewController, NavController } from 'ionic-angular';
 */
 @Component({
   templateUrl: 'build/pages/login/login.html',
+  providers: [HubLogin]
 })
 export class LoginPage {
 
   private email = "";
   private password = "";
-
-  constructor(private nav: NavController, private view: ViewController) {
-
+  private error = false;
+  private errorMsg = "";
+  
+  constructor(private nav: NavController, private view: ViewController, private hubLogin:HubLogin) {
+      this.error = this.hubLogin.error;
+      this.errorMsg = this.hubLogin.errorMsg;    
   }
 
   saveItem(){
-    let newItem = {
-      email: this.email,
-      password: this.password
-    };
+    this.hubLogin.load(this.email, this.password, this.errorHandler.bind(this))
+        .then(data => {
+          let newItem = {
+            token: data.token
+          };
+          this.view.dismiss(newItem);
+        })
+  }
 
-    this.view.dismiss(newItem);
+  errorHandler(errMsg)
+  {
+    this.error = true;
+    this.errorMsg = errMsg;
   }
 
   close(){

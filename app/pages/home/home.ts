@@ -5,12 +5,14 @@ import {AddItemPage} from '../add-item/add-item';
 import {ItemDetailPage} from "../item-detail/item-detail";
 import {LoginPage} from "../login/login";
 
-import {HubLogin} from "../../providers/hub-login/hub-login";
 import {UserList} from "../../providers/user-list/user-list";
+
+//Local storage
+import {Storage, LocalStorage} from 'ionic-angular';
 
 @Component({
     templateUrl: 'build/pages/home/home.html',
-    providers: [HubLogin, UserList]
+    providers: [UserList]
 })
 
 export class HomePage {
@@ -18,9 +20,45 @@ export class HomePage {
     private items = [];
     private token = "";
     private loggedIn = false;
+    private local:LocalStorage;
+    private hostname;
+    private href;
 
-    constructor(private nav:NavController, public hubLogin:HubLogin, private userList:UserList) {
+    private error:boolean = false;
+    private errorMsg;
 
+    constructor(private nav:NavController, private userList:UserList) {
+
+        this.hostname = window.location.hostname;
+        this.href = window.location.href;
+
+        this.local = new Storage(LocalStorage);
+
+        this.local.get('LoggedIn').then((val) => {
+            this.loggedIn = (val == 'true');
+            if (this.loggedIn) {
+                this.local.get('Token').then((val) => {
+                    //TODO if I set a bad value to this it still works
+                    this.token = "BadValueHere" + val + "andBadBadValueHere";
+                    this.drawItemList();
+                });
+            }
+        });
+    }
+
+    ///////////////////////////////// Quick Test Area
+    testArea() {
+        alert("token: " + this.token);
+        //this.attachUserRole.load(this.token, 3, "owner", this.errorHandler.bind(this)).then(data => {
+        //  alert(JSON.stringify(data));
+        //  this.error = false;
+        //  this.errorMsg = "";
+        //});
+    }
+
+    errorHandler(errMsg) {
+        this.error = true;
+        this.errorMsg = errMsg;
     }
 
     addItem() {
@@ -44,32 +82,19 @@ export class HomePage {
 
     viewItem(item) {
         this.nav.push(ItemDetailPage, {
-            item: item
+            item: item,
+            token: this.token
         });
     }
 
-    saveToken(token) {
-        this.token = token;
-        this.loggedIn = true;
+    drawItemList() {
+        this.userList.load(this.token).then(data => {
+            console.log(data);
+            this.items = data.users;
+        });
     }
 
-    doLogin(email, password) {
-        this.hubLogin.load(email, password)
-            .then(data => {
-                this.token = data.token;
-                this.loggedIn = true;
-                alert(JSON.stringify(this.token));
-                this.userList.load(this.token).then(data =>{
-                    console.log(data);
-                });
-            })
-            .catch(err => {
-                alert("Error");
-                console.log(err);
-            });
-    }
-
-    login() {
+    showLogin() {
 
         let loginModal = Modal.create(LoginPage);
 
@@ -77,15 +102,25 @@ export class HomePage {
 
             if (item) {
 
-                //Call login server
-                //alert("email:" +  item.email + " password: " + item.password);
-                //this.saveToken("sometoken");
-                this.doLogin(item.email, item.password);
+                this.token = item.token;
+                this.loggedIn = true;
+                this.local.set('LoggedIn', this.loggedIn ? 'true' : 'false');
+                this.local.set('Token', this.token);
+
+                this.drawItemList();
             }
         });
 
         this.nav.present(loginModal);
 
+    }
+
+    logOut() {
+        this.token = "";
+        this.loggedIn = false;
+        this.local.set('LoggedIn', 'false');
+        this.local.set('Token', "");
+        this.items = [];
     }
 
 }

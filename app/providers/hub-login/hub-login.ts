@@ -1,7 +1,8 @@
 import {Injectable} from '@angular/core';
 import {Http, Headers} from '@angular/http';
-import 'rxjs/add/operator/map';
-import {errorObject} from "rxjs/util/errorObject";
+
+// Add the RxJS Observable operators we need in this app.
+import '../../rxjs-operators.ts';
 
 /*
  Generated class for the HubLogin provider.
@@ -12,12 +13,13 @@ import {errorObject} from "rxjs/util/errorObject";
 @Injectable()
 export class HubLogin {
     data:any;
-
+    public error:boolean = false;
+    public errorMsg:string = "";
     constructor(private http:Http) {
         this.data = null;
     }
 
-    load(email, password) {
+    load(email, password, callback) {
         if (this.data) {
             // already loaded data
             return Promise.resolve(this.data);
@@ -26,23 +28,27 @@ export class HubLogin {
         // don't have the data yet
         return new Promise(resolve => {
 
-            //Add headers
             var headers = new Headers();
             headers.append('Content-Type', 'application/json');
-
-            // We're using Angular Http provider to request the data,
-            // then on the response it'll map the JSON data to a parsed JS object.
-            // Next we process the data and resolve the promise with the new data.
 
             this.http.post('http://homestead.app/api/authenticate',
                 JSON.stringify({email: email, password: password}), {headers: headers})
                 .map(res => res.json())
                 .subscribe(data => {
-                    // we've got back the raw data, now generate the core schedule data
-                    // and save the data for later reference
-                    this.data = data;
-                    resolve(this.data);
-                });
+                        //this.data = data;
+                        //resolve(this.data);
+                        this.error = false;
+                        resolve(data);
+                    }
+                    ,err => {
+                        this.error = true;
+                        this.errorMsg = JSON.stringify(err);
+                        //alert("Failed Login");
+                        console.log(err);
+                        callback(this.errorMsg);
+                    }
+                    ,() => console.log('Is there any purpose for this?')
+                );
         });
     }
 

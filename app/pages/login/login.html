@@ -16,6 +16,17 @@
 </ion-header>
 
 <ion-content>
+
+  <ion-card *ngIf="error" class="errMsg">
+    <ion-card-header>
+      Login Error
+    </ion-card-header>
+    <ion-card-content>
+      {{errorMsg}}
+      Please Try again
+    </ion-card-content>
+  </ion-card>
+
   <ion-list>
 
     <ion-item>

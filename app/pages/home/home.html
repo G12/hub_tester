@@ -1,17 +1,29 @@
 <ion-header>
   <ion-navbar>
     <ion-title>
-      Home
+      Home {{hostname}} - {{href}}
     </ion-title>
     <ion-buttons end>
+      <button *ngIf="loggedIn" (click)="testArea()"><icon add></icon>Test Area</button>
       <button *ngIf="loggedIn" (click)="addItem()"><icon add></icon>Add Item</button>
-      <button *ngIf="!loggedIn" (click)="login()"><icon log-in></icon>Login</button>
+      <button *ngIf="!loggedIn" (click)="showLogin()"><icon log-in></icon>Log In</button>
+      <button *ngIf="loggedIn" (click)="logOut()"><icon log-out></icon>Log Out</button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
+
+  <ion-card *ngIf="error">
+    <ion-card-header>
+      Error Message
+    </ion-card-header>
+    <ion-card-content>
+      {{errorMsg}}
+    </ion-card-content>
+  </ion-card>
+
   <ion-list>
-    <ion-item *ngFor="let item of items" (click)="viewItem(item)">{{item.title}}</ion-item>
+    <ion-item *ngFor="let item of items" (click)="viewItem(item)">{{item.name}}</ion-item>
   </ion-list>
 </ion-content>

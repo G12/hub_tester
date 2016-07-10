@@ -12,9 +12,28 @@
 
 
 <ion-content>
-  <ion-card>
+  <ion-card *ngIf="error" class="errMsg">
+    <ion-card-header>
+      Error
+    </ion-card-header>
     <ion-card-content>
-      {{description}}
+      {{errorMsg}}
     </ion-card-content>
   </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      {{name}}
+    </ion-card-content>
+  </ion-card>
+
+  <ion-list>
+    <ion-item>
+      <ion-label floating>Attach Role: {{role}} to {{name}}</ion-label>
+      <ion-input type="text" [(ngModel)]="role"></ion-input>
+    </ion-item>
+  </ion-list>
+
+  <button (click)="saveItem()" secondary style="width: 100%;">Add</button>
+
 </ion-content>
