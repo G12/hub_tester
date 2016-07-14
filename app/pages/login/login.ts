@@ -1,46 +1,47 @@
-import { Component } from '@angular/core';
-import { ViewController, NavController } from 'ionic-angular';
+import {Component} from '@angular/core';
+import {ViewController, NavController} from 'ionic-angular';
 import {HubLogin} from '../../providers/hub-login/hub-login';
 /*
-  Generated class for the LoginPage page.
+ Generated class for the LoginPage page.
 
-  See http://ionicframework.com/docs/v2/components/#navigation for more info on
-  Ionic pages and navigation.
-*/
+ See http://ionicframework.com/docs/v2/components/#navigation for more info on
+ Ionic pages and navigation.
+ */
 @Component({
-  templateUrl: 'build/pages/login/login.html',
-  providers: [HubLogin]
+    templateUrl: 'build/pages/login/login.html',
+    providers: [HubLogin]
 })
 export class LoginPage {
 
-  private email = "";
-  private password = "";
-  private error = false;
-  private errorMsg = "";
-  
-  constructor(private nav: NavController, private view: ViewController, private hubLogin:HubLogin) {
-      this.error = this.hubLogin.error;
-      this.errorMsg = this.hubLogin.errorMsg;    
-  }
+    private email = "";
+    private password = "";
+    private error = false;
+    private errorMsg = "";
 
-  saveItem(){
-    this.hubLogin.load(this.email, this.password, this.errorHandler.bind(this))
-        .then(data => {
-          let newItem = {
-            token: data.token
-          };
-          this.view.dismiss(newItem);
-        })
-  }
+    constructor(private nav:NavController, private view:ViewController, private hubLogin:HubLogin) {
+        this.error = this.hubLogin.error;
+        this.errorMsg = this.hubLogin.errorMsg;
+    }
 
-  errorHandler(errMsg)
-  {
-    this.error = true;
-    this.errorMsg = errMsg;
-  }
+    saveItem() {
+        this.hubLogin.load(this.email, this.password, this.errorHandler.bind(this))
+            .then(data => {
+                let newItem = {
+                    token: data.token
+                };
+                console.log(data);
+                alert(data.token);
+                this.view.dismiss(newItem);
+            })
+    }
 
-  close(){
-    this.view.dismiss();
-  }
+    errorHandler(errMsg) {
+        this.error = true;
+        this.errorMsg = errMsg;
+    }
+
+    close() {
+        this.view.dismiss();
+    }
 
 }

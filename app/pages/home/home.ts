@@ -5,14 +5,17 @@ import {AddItemPage} from '../add-item/add-item';
 import {ItemDetailPage} from "../item-detail/item-detail";
 import {LoginPage} from "../login/login";
 
+//Providers
 import {UserList} from "../../providers/user-list/user-list";
+import {CodeTest} from "../../providers/code-test/code-test";
+import {AddPermission} from "../../providers/add-permission/add-permission";
 
 //Local storage
 import {Storage, LocalStorage} from 'ionic-angular';
 
 @Component({
     templateUrl: 'build/pages/home/home.html',
-    providers: [UserList]
+    providers: [UserList, CodeTest, AddPermission]
 })
 
 export class HomePage {
@@ -27,7 +30,8 @@ export class HomePage {
     private error:boolean = false;
     private errorMsg;
 
-    constructor(private nav:NavController, private userList:UserList) {
+    constructor(private nav:NavController, private userList:UserList,
+                private codeTest:CodeTest, private addPermission:AddPermission) {
 
         this.hostname = window.location.hostname;
         this.href = window.location.href;
@@ -39,7 +43,7 @@ export class HomePage {
             if (this.loggedIn) {
                 this.local.get('Token').then((val) => {
                     //TODO if I set a bad value to this it still works
-                    this.token = "BadValueHere" + val + "andBadBadValueHere";
+                    this.token = val; //"BadValueHere" + val + "andBadBadValueHere";
                     this.drawItemList();
                 });
             }
@@ -48,7 +52,19 @@ export class HomePage {
 
     ///////////////////////////////// Quick Test Area
     testArea() {
-        alert("token: " + this.token);
+        //alert("token: " + this.token);
+
+        //this.codeTest.load(this.token, this.errorHandler.bind(this))
+        //    .then(data => {
+        //        alert(JSON.stringify(data));
+        //    });
+
+        this.addPermission.load(this.token, "create-invoice", "admin", this.errorHandler.bind(this))
+            .then(data => {
+                alert(JSON.stringify(data));
+
+            });
+
         //this.attachUserRole.load(this.token, 3, "owner", this.errorHandler.bind(this)).then(data => {
         //  alert(JSON.stringify(data));
         //  this.error = false;

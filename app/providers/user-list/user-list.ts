@@ -28,8 +28,11 @@ export class UserList {
       var headers = new Headers();
       headers.append('Content-Type', 'application/json');
       headers.append('Authorization', 'Bearer ' + token);
+      //The following will not work
+      //headers.append('Authorization', 'Bearer ' + token + 'BADBADBAD');
+      //headers.append('Authorization', 'Bearer ' + 'BADTOKEN');
 
-      this.http.get('http://homestead.app/api/users/')//, {headers:headers})
+      this.http.get('http://homestead.app/api/users/', {headers:headers})
         .map(res => res.json())
         .subscribe(data => {
           this.data = data;
